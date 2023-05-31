@@ -4,7 +4,7 @@ import (
 	"log"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/luis-souza-dev/fintracker/router"
+	"github.com/luis-souza-dev/fintracker-be/router"
 )
 
 func main() {

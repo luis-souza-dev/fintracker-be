@@ -2,7 +2,7 @@ package router
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"github.com/luis-souza-dev/fintracker/handler"
+	"github.com/luis-souza-dev/fintracker-be/handler"
 )
 
 
