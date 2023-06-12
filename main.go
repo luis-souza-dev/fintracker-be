@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/luis-souza-dev/fintracker-be/database"
 	"github.com/luis-souza-dev/fintracker-be/router"
 )
 
@@ -21,6 +22,6 @@ func main() {
 		return c.SendStatus(404) // => 404 "Not Found"
 	})
 
-
+	database.ConnectDb()
 	log.Fatal(app.Listen(":3000"))
 }
