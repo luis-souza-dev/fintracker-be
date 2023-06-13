@@ -14,7 +14,6 @@ COPY database ./
 COPY . .
 RUN go get github.com/githubnemo/CompileDaemon
 RUN go install github.com/githubnemo/CompileDaemon
-RUN 
 # go build -a -installsuffix cgo -o main .
 EXPOSE 3000
 ENTRYPOINT CompileDaemon -build="go build -o srv main.go" -command="./srv"

@@ -16,21 +16,16 @@ var DB *gorm.DB
 
 // connectDb
 func ConnectDb() {
-	dbHost := os.Getenv("DATABASE_HOST")
-	dbUser := os.Getenv("POSTGRES_USER")
-	dbPwd := os.Getenv("POSTGRES_PASSWORD")
-	dbName := os.Getenv("POSTGRES_DB")
-	dbPort := os.Getenv("DATABASE_PORT")
 
-	dsn := fmt.Sprintf("host=%v user=%v password=%v dbname=%v port=%v sslmode=disable TimeZone=Asia/Shanghai",
-		dbHost,
-		dbUser,
-		dbPwd,
-		dbName,
-		dbPort,
+	connectionStr := fmt.Sprintf("host=%v user=%v password=%v dbname=%v port=%v sslmode=disable TimeZone=Asia/Shanghai",
+		os.Getenv("DATABASE_HOST"),
+		os.Getenv("POSTGRES_USER"),
+		os.Getenv("POSTGRES_PASSWORD"),
+		os.Getenv("POSTGRES_DB"),
+		os.Getenv("DATABASE_PORT"),
 	)
 
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
+	db, err := gorm.Open(postgres.Open(connectionStr), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Info),
 	})
 
@@ -42,7 +37,7 @@ func ConnectDb() {
 	db.Logger = logger.Default.LogMode(logger.Info)
 	log.Println("running migrations")
 
-	db.AutoMigrate(&models.Resident{}, &models.ExpensesCategories{}, &models.Expenses{});
+	db.AutoMigrate(&models.Resident{}, &models.ExpensesCategories{}, &models.Expense{});
 
 	DB = db
 }

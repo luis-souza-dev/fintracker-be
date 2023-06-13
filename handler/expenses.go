@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
+	"strconv"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/luis-souza-dev/fintracker-be/database"
@@ -11,13 +12,19 @@ import (
 
 func CreateExpense(c *fiber.Ctx) error {
 
-	var expense models.Expenses
-	if err := c.BodyParser(&expense); err != nil {
+	expense := new(models.Expense)
+	
+	if err := c.BodyParser(expense); err != nil {
 		return c.Status(fiber.ErrBadRequest.Code).SendString(fmt.Sprintf("body err%v", err))
 	}
 
 	if expense.Name == "" {
 		return c.Status(fiber.ErrBadRequest.Code).SendString("missing name")
+	}
+
+	noCat := models.ExpensesCategories{}
+	if expense.ExpensesCategoriesID == 0 && expense.ExpensesCategories == noCat {
+		return c.Status(fiber.ErrBadRequest.Code).SendString("missing category")
 	}
 
 	if expense.Date == "" {
@@ -27,19 +34,22 @@ func CreateExpense(c *fiber.Ctx) error {
 	if expense.Total == 0 {
 		return c.Status(fiber.ErrBadRequest.Code).SendString("can not enter negative values")
 	}
-	res := database.DB.Create(&expense)
+
+	if expense.Status == "" {
+		expense.Status = "Paid"
+	}
+
+	res := database.DB.Create(expense)
 	if res.Error != nil {
 		return c.Status(fiber.ErrBadRequest.Code).SendString("smthg went wrong")
 	}
-	var i int64
-	res.Count(&i);
 
-	return c.Status(200).SendString(fmt.Sprintf("expenses works! total:%d", i))
+	return c.Status(200).SendString(fmt.Sprint(expense.ID))
 }
 
 func GetExpense(c *fiber.Ctx) error {
-	result := &[]models.Expenses{}
-	query := &models.Expenses{}
+	result := &[]models.Expense{}
+	query := &models.Expense{}
 	if err := c.QueryParser(query); err != nil {
 		return c.Status(fiber.ErrBadRequest.Code).SendString(fmt.Sprintf("query err%v", err))
 	}
@@ -54,15 +64,40 @@ func GetExpense(c *fiber.Ctx) error {
 }
 
 func EditExpense(c *fiber.Ctx) error {
-	return c.Status(200).SendString("expenses works")
-}
-
-func DeleteExpense(c *fiber.Ctx) error {
-	id := c.Params("id");
+	id := c.Params("id")
 	if id == "" {
 		return c.Status(fiber.ErrBadRequest.Code).SendString("Missing id")
 	}
-	res := database.DB.Delete(&models.Expenses{}, id)
+
+	expense := new(models.Expense)
+	reqBody := new(models.Expense)
+
+	if err := c.BodyParser(reqBody); err != nil {
+		return c.Status(fiber.ErrBadRequest.Code).SendString(fmt.Sprintf("body err%v", err))
+	}
+
+	intId, err := strconv.Atoi(id)
+
+	if err == nil {
+		expense.ID = uint(intId)
+		res := database.DB.Model(expense).Updates(reqBody)
+
+		if res.Error == nil {
+			return c.Status(200).SendString(fmt.Sprintf("body err %v, \n and queryBody %v", expense, reqBody))
+		} else {
+			return c.Status(fiber.ErrBadRequest.Code).SendString("Error while updating")
+		}
+	} else {
+		return c.Status(fiber.ErrBadRequest.Code).SendString(fmt.Sprintf("incorrect id value: %v", err))
+	}
+}
+
+func DeleteExpense(c *fiber.Ctx) error {
+	id := c.Params("id")
+	if id == "" {
+		return c.Status(fiber.ErrBadRequest.Code).SendString("Missing id")
+	}
+	res := database.DB.Delete(&models.Expense{}, id)
 
 	if res.Error != nil {
 		return c.Status(fiber.ErrBadRequest.Code).SendString("Deletion err")

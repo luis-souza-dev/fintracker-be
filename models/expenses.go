@@ -2,7 +2,7 @@ package models
 
 import "gorm.io/gorm"
 
-type Expenses struct {
+type Expense struct {
 	gorm.Model
 
 	Name string `json:"name"`
@@ -12,5 +12,6 @@ type Expenses struct {
 	Status string `json:"status"`
 	ExpensesCategoriesID int
 	ExpensesCategories ExpensesCategories
-	Residents []*Resident `gorm:"many2many:resident_expenses;"`
+	ResidentID int
+	Resident Resident
 }

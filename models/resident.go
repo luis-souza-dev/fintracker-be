@@ -8,5 +8,5 @@ type Resident struct {
 	Name string `json:"name"`
 	Birthday string `json:"birthday"`
 	Income float32 `json:"income"`
-	Expenses []*Expenses `gorm:"many2many:resident_expenses;"`
+	Expenses []Expense
 }
