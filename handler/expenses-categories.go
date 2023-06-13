@@ -20,9 +20,7 @@ func GetExpensesCategories(c *fiber.Ctx) error {
 		return c.Status(fiber.ErrBadRequest.Code).SendString(fmt.Sprintf("query err%v", err))
 	}
 	
-	database.DB.Where(&models.ExpensesCategories{
-		Name: query.Name,
-	}).Find(result)
+	database.DB.Where(query).Find(result)
 
 	jsonval, err := json.Marshal(result);
 	if err != nil {

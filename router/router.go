@@ -8,10 +8,6 @@ import (
 
 
 func InitRoutes(app *fiber.App) {
-	household := app.Group("/household")
-
-	household.Get("/", handler.GetHousehold)
-	household.Put("/", handler.EditHousehold)
 
 	resident := app.Group("/residents")
 
@@ -29,7 +25,6 @@ func InitRoutes(app *fiber.App) {
 	expenses := app.Group("expenses")
 
 	expenses.Get("/", handler.GetExpense)
-	expenses.Get("/notes/:id", handler.GetExpenseNotes)
 	expenses.Delete("/:id", handler.DeleteExpense)
 	expenses.Post("/", handler.CreateExpense)
 	expenses.Put("/", handler.EditExpense)
